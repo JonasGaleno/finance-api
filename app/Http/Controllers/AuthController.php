@@ -3,24 +3,24 @@
 namespace App\Http\Controllers;
 
 
-// use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Auth;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\UserRegisterRequest;
 use App\Models\User;
+use App\Services\AuthService;
 
 class AuthController extends Controller
 {
+    public function __construct(
+        protected AuthService $authService
+    ) {
+    }
+
     public function register(UserRegisterRequest $request) 
     {
         $validatedData = $request->validated();
 
-        $user = User::create([
-            'name' => $validatedData['name'],
-            'email' => $validatedData['email'],
-            'password' => bcrypt($validatedData['password']),
-        ]);
-
-        // $token = Auth::login($user);
+        $user = $this->authService->register($validatedData);
 
         $token = auth('api')->login($user);
 

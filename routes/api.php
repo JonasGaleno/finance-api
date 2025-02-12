@@ -9,12 +9,7 @@ use App\Http\Controllers\{
     TransactionController,
     UserController
 };
-use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
-
-// Route::get('/user', function (Request $request) {
-//     return $request->user();
-// })->middleware('auth:sanctum');
 
 Route::group(['prefix' => 'auth'], function ($router) {
     Route::post('login', [AuthController::class, 'login']);
@@ -31,7 +26,11 @@ Route::middleware(['auth:api'])->group(function(){
 
     /* Users */
     Route::group([], function () {
-        Route::apiResource('users', UserController::class);
+        Route::get('users', [UserController::class, 'index'])->name('users.index');
+        Route::get('users/{user}', [UserController::class, 'show'])->name('users.show');
+        Route::put('users/{user}', [UserController::class, 'update'])->name('users.update');
+        Route::delete('users/{user}', [UserController::class, 'destroy'])->name('users.destroy');
+        // Route::apiResource('users', UserController::class);
     });
 
     /* Payment Methods */
@@ -47,7 +46,6 @@ Route::middleware(['auth:api'])->group(function(){
     /* Transactions */
     Route::group([], function () {
         Route::apiResource('transactions', TransactionController::class);
-        // Route::get('transcations/{transaction}', [TransactionController::class, 'show'])->name('transcations.show');
     });
 
     /* Financial Goals */

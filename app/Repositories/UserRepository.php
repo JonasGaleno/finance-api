@@ -3,30 +3,46 @@
 namespace App\Repositories;
 
 use App\Models\User;
-use Illuminate\Database\Eloquent\Collection;
+use Illuminate\Contracts\Pagination\LengthAwarePaginator;
+use Illuminate\Http\Request;
+
 
 class UserRepository implements UserRepositoryInterface
 {
-    public function all(): Collection
+    public function all(Request $request): LengthAwarePaginator
     {
-        return User::all();
+        // Filtros
+        $query = User::query();
+
+        if ($request->has('name') && !empty($request->name)) {
+            $query->where('name', $request->name);
+        }
+
+        if ($request->has('email') && !empty($request->email)) {
+            $query->where('email', $request->email);
+        }
+
+        // Ordenação
+        $sortBy = $request->input('sort_by', 'created_at');
+        $sortDirection = $request->input('sort_direction', 'desc');
+
+        $query->orderBy($sortBy, $sortDirection);
+
+        // Paginação
+        $perPage = $request->input('per_page', 10);
+        $users = $query->paginate($perPage);
+
+        return $users;
     }
 
-    public function create(array $data): ?User
+    public function update(User $user, array $data): int
     {
-        return User::create($data);
+        return $user->update($data);
     }
 
-    public function update(array $data, int $id): int
+    public function delete(User $user): bool
     {
-        $user = User::findOrFail($id);
-        return $user::update($data);
-    }
-
-    public function delete(int $id): bool
-    {
-        $user = User::findOrFail($id);
-        return $user::delete();
+        return $user->delete();
     }
 
     public function find(int $id): ?User

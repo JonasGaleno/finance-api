@@ -4,7 +4,9 @@ namespace App\Services;
 
 use App\Models\User;
 use App\Repositories\UserRepositoryInterface;
-use Illuminate\Database\Eloquent\Collection;
+use Illuminate\Contracts\Pagination\LengthAwarePaginator;
+use Illuminate\Http\Request;
+use Illuminate\Support\Facades\DB;
 
 class UserService
 {
@@ -13,28 +15,59 @@ class UserService
     ) {
     }
 
-    public function all(): Collection
+    public function all(Request $request): LengthAwarePaginator
     {
-        return $this->userRepository->all();
+        $users = $this->userRepository->all($request);
+
+        if ($users->isEmpty()) {
+            throw new \Exception('Users not found');
+        }
+
+        return $users;
     }
 
-    public function create(array $data): User
+    public function update(array $data, int $id): User
     {
-        return $this->userRepository->create($data);
-    }
+        return DB::transaction(function () use ($data, $id) {
+            $user = $this->userRepository->find($id);
 
-    public function update(array $data, int $id): int
-    {
-        return $this->userRepository->update($data, $id);
+            if (!$user) {
+                throw new \Exception('User not found');
+            }
+
+            $this->userRepository->update($user, $data);
+
+            return $this->userRepository->find($id);
+        });
     }
 
     public function delete(int $id): bool
     {
-        return $this->userRepository->delete($id);
+        return DB::transaction(function () use ($id) {
+            $user = $this->userRepository->find($id);
+
+            if (!$user) {
+                throw new \Exception('User not found');
+            }
+
+            $userRemoved = $this->userRepository->delete($user);
+
+            if (!$userRemoved) {
+                throw new \Exception('An error occurred while removing the user');
+            }
+
+            return $userRemoved;
+        });
     }
 
     public function find(int $id): User
     {
-        return $this->userRepository->find($id);
+        $user = $this->userRepository->find($id);
+
+        if (!$user) {
+            throw new \Exception('User not found');
+        }
+
+        return $user;
     }
 }

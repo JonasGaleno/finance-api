@@ -3,17 +3,16 @@
 namespace App\Repositories;
 
 use App\Models\User;
-use Illuminate\Database\Eloquent\Collection;
+use Illuminate\Contracts\Pagination\LengthAwarePaginator;
+use Illuminate\Http\Request;
 
 interface UserRepositoryInterface
 {
-    public function all(): Collection;
+    public function all(Request $request): LengthAwarePaginator;
 
-    public function create(array $data): ?User;
+    public function update(User $user, array $data): int;
 
-    public function update(array $data, int $id): int;
-
-    public function delete(int $id): bool;
+    public function delete(User $user): bool;
 
     public function find(int $id): ?User;
 }

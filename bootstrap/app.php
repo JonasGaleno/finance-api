@@ -18,7 +18,8 @@ return Application::configure(basePath: dirname(__DIR__))
     ->withExceptions(function (Exceptions $exceptions) {
         $exceptions->render(function (Throwable $e, $request) {
             $response = [
-                'error' => 'Internal server error'
+                'error' => 'Internal server error',
+                'message' => $e->getMessage()
             ];
             $statusCode = 500;
 
