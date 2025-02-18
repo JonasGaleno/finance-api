@@ -5,17 +5,26 @@ namespace App\Providers;
 use App\Repositories\{
     AuthRepository,
     AuthRepositoryInterface,
+    BudgetRepository,
+    BudgetRepositoryInterface,
     CategoryRepository,
     CategoryRepositoryInterface,
+    FinancialGoalRepository,
+    FinancialGoalRepositoryInterface,
     PaymentMethodRepository,
     PaymentMethodRepositoryInterface,
+    TransactionRepository,
+    TransactionRepositoryInterface,
     UserRepository,
     UserRepositoryInterface
 };
 use App\Services\{
     AuthService,
+    BudgetService,
     CategoryService,
+    FinancialGoalService,
     PaymentMethodService,
+    TransactionService,
     UserService
 };
 use Illuminate\Support\ServiceProvider;
@@ -45,6 +54,21 @@ class AppServiceProvider extends ServiceProvider
         $this->app->bind(CategoryRepositoryInterface::class, CategoryRepository::class);
         $this->app->bind(CategoryService::class, function ($app) {
             return new CategoryService($app->make(CategoryRepositoryInterface::class));
+        });
+
+        $this->app->bind(TransactionRepositoryInterface::class, TransactionRepository::class);
+        $this->app->bind(TransactionService::class, function ($app) {
+            return new TransactionService($app->make(TransactionRepositoryInterface::class));
+        });
+
+        $this->app->bind(BudgetRepositoryInterface::class, BudgetRepository::class);
+        $this->app->bind(BudgetService::class, function ($app) {
+            return new BudgetService($app->make(BudgetRepositoryInterface::class));
+        });
+
+        $this->app->bind(FinancialGoalRepositoryInterface::class, FinancialGoalRepository::class);
+        $this->app->bind(FinancialGoalService::class, function ($app) {
+            return new FinancialGoalService($app->make(FinancialGoalRepositoryInterface::class));
         });
     }
 

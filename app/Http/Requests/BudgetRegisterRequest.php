@@ -4,7 +4,7 @@ namespace App\Http\Requests;
 
 use Illuminate\Foundation\Http\FormRequest;
 
-class CategoryRegisterRequest extends FormRequest
+class BudgetRegisterRequest extends FormRequest
 {
     /**
      * Determine if the user is authorized to make this request.
@@ -22,9 +22,11 @@ class CategoryRegisterRequest extends FormRequest
     public function rules(): array
     {
         return [
-            'name' => 'required|string|max:255',
             'user_id' => 'required|exists:users,id|integer',
-            'type' => 'required|string|in:income,expense'
+            'category_id' => 'required|exists:categories,id|integer',
+            'limit_amount' => 'required|numeric|min:0',
+            'month' => 'required|string|in:january,february,march,april,may,june,july,august,september,october,november,december',
+            'year' => 'required|digits:4|integer|min:' . date('Y'),
         ];
     }
 }

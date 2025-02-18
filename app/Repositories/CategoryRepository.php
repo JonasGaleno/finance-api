@@ -22,6 +22,10 @@ class CategoryRepository implements CategoryRepositoryInterface
             $query->where('user_id', $request->user_id);
         }
 
+        if ($request->has('type') && !empty($request->type)) {
+            $query->where('type', $request->type);
+        }
+
         // Ordenação
         $sortBy = $request->input('sort_by', 'created_at');
         $sortDirection = $request->input('sort_direction', 'desc');

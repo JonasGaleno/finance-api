@@ -54,7 +54,7 @@ class PaymentMethodService
             $paymentMethod = $this->paymentMethodRepository->find($id);
 
             if (!$paymentMethod) {
-                throw new \Exception('User not found', 400);
+                throw new \Exception('Payment method not found', 400);
             }
 
             $paymentMethodRemoved = $this->paymentMethodRepository->delete($paymentMethod);

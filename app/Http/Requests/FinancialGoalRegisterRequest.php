@@ -4,7 +4,7 @@ namespace App\Http\Requests;
 
 use Illuminate\Foundation\Http\FormRequest;
 
-class CategoryRegisterRequest extends FormRequest
+class FinancialGoalRegisterRequest extends FormRequest
 {
     /**
      * Determine if the user is authorized to make this request.
@@ -24,7 +24,10 @@ class CategoryRegisterRequest extends FormRequest
         return [
             'name' => 'required|string|max:255',
             'user_id' => 'required|exists:users,id|integer',
-            'type' => 'required|string|in:income,expense'
+            'category_id' => 'required|exists:categories,id|integer',
+            'target_amount' => 'required|numeric|min:0',
+            'current_amount' => 'required|numeric|min:0',
+            'deadline_date' => 'required|date',
         ];
     }
 }
