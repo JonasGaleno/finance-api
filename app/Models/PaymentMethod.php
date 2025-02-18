@@ -11,6 +11,7 @@ class PaymentMethod extends Model
 
     protected $table = 'payment_methods';
     protected $fillable = ['user_id','name'];
+    protected $hidden = ['created_at', 'updated_at'];
 
     public function user()
     {

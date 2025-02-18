@@ -17,6 +17,7 @@ class Budget extends Model
         'month',
         'year'
     ];
+    protected $hidden = ['created_at', 'updated_at'];
 
     public function user()
     {

@@ -12,7 +12,11 @@ class TransactionRepository implements TransactionRepositoryInterface
     public function all(Request $request): LengthAwarePaginator
     {
         // Filtros
-        $query = Transaction::query();
+        $query = Transaction::with([
+            'user:id,name,email',
+            'category:id,name,type',
+            'paymentMethod:id,name'
+        ]);
 
         if ($request->has('description') && !empty($request->description)) {
             $query->where('description', $request->description);
@@ -57,7 +61,11 @@ class TransactionRepository implements TransactionRepositoryInterface
 
     public function register(array $data): ?Transaction
     {
-        return Transaction::create($data);
+        return Transaction::create($data)->load([
+            'user:id,name,email',
+            'category:id,name,type',
+            'paymentMethod:id,name'
+        ]);
     }
 
     public function update(Transaction $transaction, array $data): int
@@ -72,6 +80,10 @@ class TransactionRepository implements TransactionRepositoryInterface
 
     public function find(int $id): ?Transaction
     {
-        return Transaction::find($id);
+        return Transaction::with([
+            'user:id,name,email',
+            'category:id,name,type',
+            'paymentMethod:id,name'
+        ])->find($id);
     }
 }

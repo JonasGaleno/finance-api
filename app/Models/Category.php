@@ -11,6 +11,7 @@ class Category extends Model
 
     protected $table = 'categories';
     protected $fillable = ['user_id','name','type'];
+    protected $hidden = ['created_at', 'updated_at'];
 
     public function user()
     {

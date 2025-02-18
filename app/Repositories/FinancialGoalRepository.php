@@ -12,7 +12,10 @@ class FinancialGoalRepository implements FinancialGoalRepositoryInterface
     public function all(Request $request): LengthAwarePaginator
     {
         // Filtros
-        $query = FinancialGoal::query();
+        $query = FinancialGoal::with([
+            'user:id,name,email',
+            'category:id,name,type'
+        ]);
 
         if ($request->has('name') && !empty($request->name)) {
             $query->where('name', $request->name);
@@ -53,7 +56,10 @@ class FinancialGoalRepository implements FinancialGoalRepositoryInterface
 
     public function register(array $data): ?FinancialGoal
     {
-        return FinancialGoal::create($data);
+        return FinancialGoal::create($data)->load([
+            'user:id,name,email',
+            'category:id,name,type'
+        ]);
     }
 
     public function update(FinancialGoal $financialGoal, array $data): int
@@ -68,6 +74,9 @@ class FinancialGoalRepository implements FinancialGoalRepositoryInterface
 
     public function find(int $id): ?FinancialGoal
     {
-        return FinancialGoal::find($id);
+        return FinancialGoal::with([
+            'user:id,name,email',
+            'category:id,name,type'
+        ])->find($id);
     }
 }

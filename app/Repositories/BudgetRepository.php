@@ -12,7 +12,10 @@ class BudgetRepository implements BudgetRepositoryInterface
     public function all(Request $request): LengthAwarePaginator
     {
         // Filtros
-        $query = Budget::query();
+        $query = Budget::with([
+            'user:id,name,email',
+            'category:id,name,type'
+        ]);
 
         if ($request->has('category_id') && !empty($request->category_id)) {
             $query->where('category_id', $request->category_id);
@@ -49,7 +52,10 @@ class BudgetRepository implements BudgetRepositoryInterface
 
     public function register(array $data): ?Budget
     {
-        return Budget::create($data);
+        return Budget::create($data)->load([
+            'user:id,name,email',
+            'category:id,name,type'
+        ]);
     }
 
     public function update(Budget $budget, array $data): int
@@ -64,6 +70,9 @@ class BudgetRepository implements BudgetRepositoryInterface
 
     public function find(int $id): ?Budget
     {
-        return Budget::find($id);
+        return Budget::with([
+            'user:id,name,email',
+            'category:id,name,type'
+        ])->find($id);
     }
 }

@@ -11,13 +11,14 @@ class FinancialGoal extends Model
 
     protected $table = 'financial_goals';
     protected $fillable = [
-        'user_id',
         'name',
+        'user_id',
+        'category_id',
         'target_amount',
         'current_amount',
-        'category_id',
         'deadline_date'
     ];
+    protected $hidden = ['created_at', 'updated_at'];
 
     public function user()
     {

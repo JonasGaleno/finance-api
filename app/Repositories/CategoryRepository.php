@@ -12,7 +12,7 @@ class CategoryRepository implements CategoryRepositoryInterface
     public function all(Request $request): LengthAwarePaginator
     {
         // Filtros
-        $query = Category::query();
+        $query = Category::with(['user:id,name,email']);
 
         if ($request->has('name') && !empty($request->name)) {
             $query->where('name', $request->name);
@@ -41,7 +41,7 @@ class CategoryRepository implements CategoryRepositoryInterface
 
     public function register(array $data): ?Category
     {
-        return Category::create($data);
+        return Category::create($data)->load(['user:id,name,email']);;
     }
 
     public function update(Category $category, array $data): int
@@ -56,6 +56,6 @@ class CategoryRepository implements CategoryRepositoryInterface
 
     public function find(int $id): ?Category
     {
-        return Category::find($id);
+        return Category::with(['user:id,name,email'])->find($id);
     }
 }

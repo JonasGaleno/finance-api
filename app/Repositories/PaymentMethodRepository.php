@@ -12,7 +12,7 @@ class PaymentMethodRepository implements PaymentMethodRepositoryInterface
     public function all(Request $request): LengthAwarePaginator
     {
         // Filtros
-        $query = PaymentMethod::query();
+        $query = PaymentMethod::with(['user:id,name,email']);
 
         if ($request->has('name') && !empty($request->name)) {
             $query->where('name', $request->name);
@@ -37,7 +37,7 @@ class PaymentMethodRepository implements PaymentMethodRepositoryInterface
 
     public function register(array $data): ?PaymentMethod
     {
-        return PaymentMethod::create($data);
+        return PaymentMethod::create($data)->load(['user:id,name,email']); // Eager loading
     }
 
     public function update(PaymentMethod $paymentMethod, array $data): int
@@ -52,6 +52,6 @@ class PaymentMethodRepository implements PaymentMethodRepositoryInterface
 
     public function find(int $id): ?PaymentMethod
     {
-        return PaymentMethod::find($id);
+        return PaymentMethod::with(['user:id,name,email'])->find($id);
     }
 }
