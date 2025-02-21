@@ -4,6 +4,7 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Support\Facades\Cache;
 
 class Transaction extends Model
 {
@@ -34,5 +35,16 @@ class Transaction extends Model
     public function paymentMethod()
     {
         return $this->belongsTo(PaymentMethod::class);
+    }
+
+    protected static function booted()
+    {
+        static::saved(function () {
+            Cache::flush();
+        });
+
+        static::deleted(function () {
+            Cache::flush();
+        });
     }
 }

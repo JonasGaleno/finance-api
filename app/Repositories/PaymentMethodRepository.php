@@ -5,34 +5,39 @@ namespace App\Repositories;
 use App\Models\PaymentMethod;
 use Illuminate\Contracts\Pagination\LengthAwarePaginator;
 use Illuminate\Http\Request;
-
+use Illuminate\Support\Facades\Cache;
 
 class PaymentMethodRepository implements PaymentMethodRepositoryInterface
 {
     public function all(Request $request): LengthAwarePaginator
     {
-        // Filtros
-        $query = PaymentMethod::with(['user:id,name,email']);
+        $filters = $request->query();
+        $cacheKey = "payment_methods_" . md5(json_encode($filters));
+        $cacheTime = 10;
 
-        if ($request->has('name') && !empty($request->name)) {
-            $query->where('name', $request->name);
-        }
+        return Cache::remember($cacheKey, now()->addMinutes($cacheTime), function () use ($request) {
+            $query = PaymentMethod::with(['user:id,name,email']);
 
-        if ($request->has('user_id') && !empty($request->user_id)) {
-            $query->where('user_id', $request->user_id);
-        }
+            // Filtros
+            if ($request->has('name') && !empty($request->name)) {
+                $query->where('name', $request->name);
+            }
 
-        // Ordenação
-        $sortBy = $request->input('sort_by', 'created_at');
-        $sortDirection = $request->input('sort_direction', 'desc');
+            if ($request->has('user_id') && !empty($request->user_id)) {
+                $query->where('user_id', $request->user_id);
+            }
 
-        $query->orderBy($sortBy, $sortDirection);
+            // Ordenação
+            $sortBy = $request->input('sort_by', 'created_at');
+            $sortDirection = $request->input('sort_direction', 'desc');
 
-        // Paginação
-        $perPage = $request->input('per_page', 10);
-        $paymentMethods = $query->paginate($perPage);
+            $query->orderBy($sortBy, $sortDirection);
 
-        return $paymentMethods;
+            // Paginação
+            $perPage = $request->input('per_page', 10);
+
+            return $query->paginate($perPage);
+        });
     }
 
     public function register(array $data): ?PaymentMethod
@@ -52,6 +57,11 @@ class PaymentMethodRepository implements PaymentMethodRepositoryInterface
 
     public function find(int $id): ?PaymentMethod
     {
-        return PaymentMethod::with(['user:id,name,email'])->find($id);
+        $cacheKey = "payment_method_{$id}";
+        $cacheTime = 10;
+
+        return Cache::remember($cacheKey, now()->addMinutes($cacheTime), function () use ($id) {
+            return PaymentMethod::with(['user:id,name,email'])->find($id);
+        });
     }
 }

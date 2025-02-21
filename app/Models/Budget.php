@@ -4,6 +4,7 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Support\Facades\Cache;
 
 class Budget extends Model
 {
@@ -27,5 +28,16 @@ class Budget extends Model
     public function category()
     {
         return $this->belongsTo(Category::class);
+    }
+
+    protected static function booted()
+    {
+        static::saved(function () {
+            Cache::flush();
+        });
+
+        static::deleted(function () {
+            Cache::flush();
+        });
     }
 }
